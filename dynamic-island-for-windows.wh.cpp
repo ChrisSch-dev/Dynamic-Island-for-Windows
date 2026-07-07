@@ -3460,8 +3460,32 @@ class Renderer {
 
         mutedBrush_->SetOpacity(0.85f);
         // Description
-        target_->DrawTextW(desc.c_str(), static_cast<UINT32>(desc.length()), textFormat_.Get(),
-                           D2D1::RectF(rect.left + 35.0f * scale, rect.top + 120.0f * scale, rect.left + 185.0f * scale, rect.bottom),
+        const size_t descLength = desc.length();
+        float descFontSize = 13.5f;
+        if (descLength > 58) descFontSize = 9.8f;
+        else if (descLength > 44) descFontSize = 10.5f;
+        else if (descLength > 32) descFontSize = 11.5f;
+        else if (descLength > 22) descFontSize = 12.5f;
+        descFontSize *= scale;
+
+        ComPtr<IDWriteTextFormat> weatherDescFormat;
+        if (dwriteFactory_) {
+            dwriteFactory_->CreateTextFormat(L"Segoe UI Variable Display", nullptr,
+                                             DWRITE_FONT_WEIGHT_SEMI_BOLD,
+                                             DWRITE_FONT_STYLE_NORMAL,
+                                             DWRITE_FONT_STRETCH_NORMAL,
+                                             descFontSize, L"", &weatherDescFormat);
+        }
+        if (weatherDescFormat) {
+            weatherDescFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
+            weatherDescFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+            weatherDescFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+        }
+
+        target_->DrawTextW(desc.c_str(), static_cast<UINT32>(desc.length()),
+                           weatherDescFormat ? weatherDescFormat.Get() : textFormat_.Get(),
+                           D2D1::RectF(rect.left + 35.0f * scale, rect.top + 120.0f * scale,
+                                       rect.left + 185.0f * scale, rect.bottom - 12.0f * scale),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         ComPtr<ID2D1SolidColorBrush> divider;
@@ -3507,7 +3531,7 @@ class Renderer {
 
         const float scale = 1.0f;
         const float width = rect.right - rect.left;
-        
+
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
         std::wstring wText = L"Loading...";
@@ -3523,7 +3547,7 @@ class Renderer {
             textBrush_->SetOpacity(0.96f);
             target_->DrawTextW(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
                                timeRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-            
+
             ComPtr<ID2D1SolidColorBrush> divider;
             target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.12f * settingsOpacity_), &divider);
             target_->FillRoundedRectangle(
@@ -5569,9 +5593,9 @@ DWORD WINAPI RenderThreadProc(void*) {
         POINT cursor = {};
         GetCursorPos(&cursor);
         const bool hover = PtInRect(&windowRect, cursor) != FALSE;
-        
+
         bool needsRender = false;
-        
+
         if (!hover && g_clickExpanded.load()) {
             g_clickExpanded = false;
             needsRender = true;
@@ -5585,13 +5609,13 @@ DWORD WINAPI RenderThreadProc(void*) {
         }
 
         bool isHoverExpanded = g_settings.expandOnHover ? hover : (hover && g_clickExpanded.load());
-        
+
         if (currentlyHidden && !g_settings.unhideOnHover && primary.kind == IslandKind::Idle) {
             isHoverExpanded = false;
         } else if (isHoverExpanded || pinned || primary.kind != IslandKind::Idle) {
             lastInteractionTime = now;
         }
-        
+
         bool isHidden = false;
         if (g_settings.autoHideIdleSeconds == -1) {
             isHidden = true;
@@ -5726,7 +5750,7 @@ DWORD WINAPI RenderThreadProc(void*) {
         if (snapshot.system.micActive || snapshot.system.cameraActive) {
             needsRender = true;
         }
-        
+
         // Idle dashboard clock changes once a minute
         static SYSTEMTIME prevTime = {};
         if (primary.kind == IslandKind::Idle && !isHidden) {
@@ -5752,7 +5776,7 @@ DWORD WINAPI RenderThreadProc(void*) {
         static bool prevCharging = false;
         static int prevProg = -1;
         static std::wstring prevMediaTitle;
-        
+
         if (snapshot.media.artGeneration != prevArtGen ||
             snapshot.media.sourceIconGeneration != prevSrcIconGen ||
             snapshot.media.title != prevMediaTitle ||
