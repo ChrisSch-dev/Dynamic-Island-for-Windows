@@ -2144,6 +2144,14 @@ static void InitGpuQuery() {
     }
 }
 
+static void ShutdownGpuQuery() {
+    if (g_gpuQuery != NULL) {
+        PdhCloseQuery(g_gpuQuery);
+        g_gpuQuery = NULL;
+        g_gpuCounter = NULL;
+    }
+}
+
 static int GetGpuUsage() {
     InitGpuQuery();
     if (!g_gpuQuery || !g_gpuCounter) return 0;
@@ -5921,6 +5929,8 @@ void StopThreads() {
         CloseHandle(g_settingsChangedEvent);
         g_settingsChangedEvent = nullptr;
     }
+
+    ShutdownGpuQuery();
 
     g_running = false;
 }
