@@ -2873,7 +2873,9 @@ class Renderer {
         EnsureBrushes(settings, state);
         settingsOpacity_ = settings.pillOpacity;
 
-        const float hoverScale = hover || pinned ? 1.025f : 1.0f;
+        const bool gameMetricsPresent = primary.kind == IslandKind::Idle &&
+            (settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0);
+        const float hoverScale = ((hover && !gameMetricsPresent) || pinned) ? 1.025f : 1.0f;
         const float scale = hoverScale;
 
         const float top = kRenderPadY + nudge;
@@ -5329,19 +5331,22 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 int xPos = GET_X_LPARAM(lParam);
                 int yPos = GET_Y_LPARAM(lParam);
 
-                bool expanded = Wh_GetIntValue(L"PinnedExpanded", 0) != 0 || g_clickExpanded.load();
-                if (!g_settings.expandOnHover && !expanded) {
-                    g_clickExpanded = true;
-                    g_layoutDirty = true;
-                    return 0; // consumed click to expand
-                }
-
                 bool mediaActive = false;
                 std::vector<IslandKind> kinds;
                 {
                     std::lock_guard lock(g_stateMutex);
                     mediaActive = g_settings.media && g_state.media.available;
                     kinds = ChooseActivities(g_state, g_settings, NowSeconds());
+                }
+                const bool gameMetricsPresent =
+                    !kinds.empty() && kinds.front() == IslandKind::Idle &&
+                    (g_settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0);
+
+                bool expanded = Wh_GetIntValue(L"PinnedExpanded", 0) != 0 || g_clickExpanded.load();
+                if (!gameMetricsPresent && !g_settings.expandOnHover && !expanded) {
+                    g_clickExpanded = true;
+                    g_layoutDirty = true;
+                    return 0; // consumed click to expand
                 }
 
                 RECT clientRect;
@@ -5609,6 +5614,11 @@ DWORD WINAPI RenderThreadProc(void*) {
         }
 
         bool isHoverExpanded = g_settings.expandOnHover ? hover : (hover && g_clickExpanded.load());
+        const bool gameMetricsPresent = primary.kind == IslandKind::Idle &&
+            (g_settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0);
+        if (gameMetricsPresent) {
+            isHoverExpanded = false;
+        }
 
         if (currentlyHidden && !g_settings.unhideOnHover && primary.kind == IslandKind::Idle) {
             isHoverExpanded = false;
@@ -5633,8 +5643,7 @@ DWORD WINAPI RenderThreadProc(void*) {
                 primary.height = 0.0f;
             }
         }
-        if (primary.kind == IslandKind::Idle &&
-            (g_settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0)) {
+        if (gameMetricsPresent) {
             primary.width = 372.0f * g_settings.sizeScale;
             primary.height = 64.0f * g_settings.sizeScale;
         }
