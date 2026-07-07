@@ -40,7 +40,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 
 ---
 
-## Fixes by ChrisSch
+## Fixes by ChrisSch-dev
 - **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island;
 - **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
 - **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
