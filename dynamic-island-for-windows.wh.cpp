@@ -58,6 +58,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island;
 - **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
 - **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
+- **Weather Dashboard:** Fixed a problem where the Weather Dashboard fails to update after waking up the computer from Sleep Mode.
 
 ---
 
@@ -5273,6 +5274,24 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 TriggerNudge();
             }
             return 0;
+        }
+
+        case WM_POWERBROADCAST: {
+            // Handle resume from sleep so background threads (weather) wake up and refresh immediately
+            if (wParam == PBT_APMRESUMESUSPEND || wParam == PBT_APMRESUMEAUTOMATIC || wParam == PBT_APMRESUMECRITICAL) {
+                // Wake the weather thread which waits on g_settingsChangedEvent during idle
+                if (g_settingsChangedEvent) {
+                    SetEvent(g_settingsChangedEvent);
+                }
+                // Mark weather as stale so UI will show loading until new data arrives
+                {
+                    std::lock_guard lock(g_stateMutex);
+                    g_state.weather.lastUpdated = 0.0;
+                }
+                // Request an immediate render update
+                TriggerNudge();
+            }
+            return TRUE;
         }
 
         case WM_CLIPBOARDUPDATE:
