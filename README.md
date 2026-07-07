@@ -1,78 +1,60 @@
-# 🏝️ Dynamic Island for Windows
+# Dynamic Island for Windows
 
-A smooth, interactive overlay for your desktop, inspired by Apple's Dynamic Island. It brings a sleek media widget, notifications, and system alerts to Windows without slowing down your PC.
+A fluid, living overlay inspired by Apple's Dynamic Island, bringing a beautiful, highly-responsive UI to your Windows desktop. Built natively with hardware-accelerated Direct2D rendering for a buttery-smooth 60 FPS experience.
 
----
-
-## 📸 See it in Action
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/Full-preview.png" alt="Dynamic Island Preview" width="600" style="border-radius: 8px; margin: 10px;"/>
-</p>
-
-### Dashboards
-
-| Media Player | Calendar | Weather | Game Overlay | Idle View |
-| :---: | :---: | :---: | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/media.png" width="200" /> | <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/calender.png" width="200" /> | <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/weather.png" width="200" /> | <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/gamebar.png" width="200" /> | <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/idle.png" width="200" /> |
-
-### Privacy Indicators
-
-| Camera Detected | Microphone Detected |
-| :---: | :---: |
-| <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/camera-detected.png" width="200" /> | <img src="https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/mic-detected.png" width="200" /> |
+![Dynamic Island Preview](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/Full-preview.png)
 
 ---
 
-## ✨ What it does
+## 🚀 Modules & Dashboards
 
-- 🟢 **Privacy Dots:** See an orange dot when your mic is on and a green dot for your camera.
-- 🎵 **Media Player:** Live album art, audio waveforms, and playback controls.
-- 📅 **Dashboards:** Scroll your mouse wheel to easily switch between Media, Calendar, and live Weather (via wttr.in).
-- 🔒 **Key Alerts:** Get quick visual popups when you hit Caps Lock or Num Lock.
-- 🔋 **Battery & Power:** Fluid animations when you plug in, unplug, or hit low battery.
-- 🔌 **Device Status:** Alerts when you plug in a USB drive or connect a Bluetooth device.
-- 🎢 **Bouncy Animations:** Enjoy satisfying spring physics that pop open and smoothly glide back.
-- 🖥️ **Windows 11 Style:** Swap to a modern Fluent design with sleek borders and acrylic backgrounds.
-- 📊 **Game Overlay:** Real-time FPS, CPU, GPU, and RAM stats built right in.
-- 📋 **Clipboard & Notifications:** Instantly preview what you just copied or see your latest Windows notifications.
-- 🎨 **Themes:** Pick from OLED Black, Midnight Blue, Deep Purple, or pick your own hex color.
+The Dynamic Island intelligently expands to display context-aware dashboards. You can easily navigate between different views using your mouse scroll wheel.
 
----
-
-## ⚙️ Customization
-
-Tweak the mod easily from the **Windhawk settings panel**:
-- **Position:** Place it Top Center, Top Left, Top Right, or Bottom Center.
-- **Scale:** Shrink or enlarge it to fit your screen perfectly.
-- **Style:** Choose the classic iPhone Pill look or the modern Windows 11 Fluent flyout.
-- **Colors:** Match it to your album art automatically, use system colors, or pick your own.
-- **Speed:** Set animations to Slow, Normal, or Fast.
-- **Modules:** Turn on or off the parts you want (Media, Clipboard, Battery, etc.).
-- **Process Inclusion (for Notifications):** To use the notification module, you must add `explorer.exe` to the process inclusion list under the **Advanced** tab of the mod settings in Windhawk, then restart the mod.
+| Module | Description | Preview |
+| :--- | :--- | :--- |
+| **Media Player** | Shows live album art, track details, audio waveforms, and full playback controls. | ![Media](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/media.png) |
+| **Calendar** | A sleek, perfectly aligned monthly calendar that highlights the current date. | ![Calendar](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/calender.png) |
+| **Weather** | Real-time weather stats powered by wttr.in, including wind speed, humidity, and "feels like" temperature. | ![Weather](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/weather.png) |
+| **Game Overlay** | Real-time FPS, CPU, GPU, and RAM utilization overlays tailored for gamers. | ![Gamebar](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/gamebar.png) |
+| **Idle View** | A minimal dashboard with your battery status, digital clock, and sleek pagination dots. | ![Idle](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/idle.png) |
+| **Camera Privacy** | Shows a green dot when an app is actively using your webcam. | ![Camera](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/camera-detected.png) |
+| **Mic Privacy** | Shows an orange dot when an app is actively using your microphone. | ![Mic](https://raw.githubusercontent.com/devcode90/Dynamic-Island-for-Windows/main/previews/mic-detected.png) |
 
 ---
 
-## 💬 Let's Chat!
+## ✨ Core Features
 
-Found a bug? Have a cool feature idea? We want to hear from you! Please drop an issue on our [GitHub Repository](https://github.com/devcode90/Dynamic-Island-for-Windows/issues). Your feedback keeps this mod alive.
-
----
-
-## 🙌 Shoutouts
-
-- **[ciizerr](https://github.com/ciizerr)**: Massive thanks for fixing UI alignments, smoothing out the dashboard sizing, and polishing the calendar and weather tabs.
+- **Hardware Privacy Indicators:** A pulsing orange dot appears when your microphone is active, and a green dot when your camera is in use. Rate-limited polling ensures absolutely no CPU drain.
+- **High-Res Clipboard & Notifications:** Instantly see what you copied or your latest Windows notifications, featuring crisp, high-fidelity 64px app icons extracted directly from system executables.
+- **Dynamic Fluid Animations:** Fully smooth resizing and splitting when multiple events happen at once (e.g., media playing while you copy text or receive a notification).
+- **Customizable Aesthetics:** Switch between sleek OLED Black, Dark Gray, Midnight Blue, and Deep Purple themes from the right-click menu, or use the settings to dial in your exact hex colors.
 
 ---
 
-## 🛠️ Nerd Stuff
+## ⚙️ Usage & Settings
 
-Built with C++23 and deeply integrated with Windows for maximum performance:
-- **Direct2D:** Hardware-accelerated rendering for buttery 60 FPS animations.
-- **Zero Lag:** Rate-limited polling and efficient system hooks mean it uses almost 0% CPU in the background.
+- **Hover & Scroll:** Hover over the island to seamlessly expand it. Use your mouse scroll wheel to swipe between the Media, Calendar, and Weather tabs.
+- **Right-Click Menu:** Right-click the island to access Theme presets, Transparency settings, and to pin the island open.
+- **Windhawk Settings:** Visit the Mod Settings tab to change the island's Position, Size Scale, Animation Speed, and toggle specific modules. You can also perfectly align the island using the new `Offset X` and `Offset Y` settings, and even select exactly which monitor the island should appear on (including a brand new "Follow Mouse" mode!).
+- **Notifications:** To use the notification module, you need to add `explorer.exe` to the process inclusion list in the Advanced tab of the mod settings and restart the mod.
 
 ---
 
-## 📜 License
+## Fixes by ChrisSch
+- **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island;
+- **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
+- **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
+- **Weather Dashboard:** Fixed a problem where the Weather Dashboard fails to update after waking up the computer from Sleep Mode.
 
-This project uses the [MIT License](LICENSE). Feel free to build on it!
+---
+
+## 📝 Feedback & Credits
+
+### Feedback / Support / Bug Reports
+- Please use [Windhawk Mods Issues](https://github.com/ramensoftware/windhawk-mods/issues) or [dynamic-island-for-windows issues](https://github.com/devcode90/dynamic-island-for-windows/issues) to report bugs, request features, or share feedback.
+- Clear descriptions, screenshots, or steps to reproduce help improve fixes and updates.
+- Suggestions for UI/UX or new integrations are always welcome.
+
+### Credits
+- **[ciizerr @GitHub](https://github.com/ciizerr)**: Improved the UI by refining layout alignment, fixing dashboard scaling, and enhancing calendar and weather module integration.
+
