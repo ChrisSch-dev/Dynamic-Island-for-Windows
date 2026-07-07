@@ -59,6 +59,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
 - **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
 - **Weather Dashboard:** Fixed a problem where the Weather Dashboard fails to update after waking up the computer from Sleep Mode.
+- **Memory Leaks:** Fixed various possible memory leaks.
 
 ---
 
@@ -2940,6 +2941,8 @@ class Renderer {
                                    ULW_ALPHA) != FALSE;
     }
 
+    ~Renderer() { Shutdown(); }
+
     void Shutdown() {
         artBitmap_.Reset();
         notificationIconBitmap_.Reset();
@@ -5433,6 +5436,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                                         }
                                     }
                                 } catch (...) {}
+                                winrt::uninit_apartment();
                             }).detach();
                             return 0;
                         }
