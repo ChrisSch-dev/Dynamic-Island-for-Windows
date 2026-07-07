@@ -1,10 +1,10 @@
 // ==WindhawkMod==
 // @id              dynamic-island-for-windows-fork
 // @name            Dynamic Island for Windows - Fork
-// @description     A living, breathing pill overlay inspired by iPhone's Dynamic Island. Reacts to media, downloads, clipboard, battery, and more.
-// @version         1.1.1
-// @author          Himanshu
-// @github          https://github.com/devcode90
+// @description     Fixes a few problems with the original Dynamic Island for Windows mod.
+// @version         1.0.0
+// @author          Fork Dev: ChrisSch || Original Dev: Himanshu
+// @github          https://github.com/ChrisSch-dev
 // @include         windhawk.exe
 // @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh
 // @license         MIT
@@ -51,6 +51,13 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Right-Click Menu:** Right-click the island to access Theme presets, Transparency settings, and to pin the island open.
 - **Windhawk Settings:** Visit the Mod Settings tab to change the island's Position, Size Scale, Animation Speed, and toggle specific modules. You can also perfectly align the island using the new `Offset X` and `Offset Y` settings, and even select exactly which monitor the island should appear on (including a brand new "Follow Mouse" mode!).
 - **Notifications:** To use the notification module, you need to add `explorer.exe` to the process inclusion list in the Advanced tab of the mod settings and restart the mod.
+
+---
+
+## Fixes by ChrisSch
+- **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island;
+- **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
+- **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
 
 ---
 
