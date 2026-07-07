@@ -3547,7 +3547,8 @@ class Renderer {
             D2D1_RECT_F timeRect = D2D1::RectF(rect.left + 20.0f * scale, rect.top + 7.0f * scale,
                                                rect.left + 80.0f * scale, rect.bottom - 7.0f * scale);
             textBrush_->SetOpacity(0.96f);
-            target_->DrawTextW(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
+            std::wstring timeWithEmoji = std::wstring(L"⏲️ ") + timeBuf;
+            target_->DrawTextW(timeWithEmoji.c_str(), static_cast<UINT32>(timeWithEmoji.size()), smallTextFormat_.Get(),
                                timeRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
             ComPtr<ID2D1SolidColorBrush> divider;
