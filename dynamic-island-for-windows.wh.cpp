@@ -3542,6 +3542,8 @@ class Renderer {
             textBrush_->SetOpacity(1.0f);
             target_->PopAxisAlignedClip();
 
+            g_idleTab = 0;
+
             return;
         }
 
