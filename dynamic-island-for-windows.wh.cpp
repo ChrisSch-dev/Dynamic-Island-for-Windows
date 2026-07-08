@@ -3559,9 +3559,9 @@ class Renderer {
                                            rect.left + 191.5f * scale, rect.bottom - 34.0f * scale),
                               0.5f * scale, 0.5f * scale), divider.Get());
 
-        std::wstring line3 = hasWeather ? L"Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"Updated recently";
-        std::wstring line4 = hasWeather ? L"Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"";
-        std::wstring line5 = hasWeather ? L"Humidity: " + state.weather.humidity + L"%" : L"";
+        std::wstring line3 = hasWeather ? L"🍃 Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"Updated recently";
+        std::wstring line4 = hasWeather ? L"🌡️ Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"";
+        std::wstring line5 = hasWeather ? L"💧 Humidity: " + state.weather.humidity + L"%" : L"";
 
         mutedBrush_->SetOpacity(0.70f);
 
