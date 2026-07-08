@@ -54,13 +54,13 @@ Tweak the mod easily from the **Windhawk settings panel**:
 ---
 
 ## Fixes by ChrisSch-dev
-- **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island;
-- **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
-- **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
-- **Weather Dashboard:** Fixed a problem where the Weather Dashboard fails to update after waking up the computer from Sleep Mode.
-- **Memory Leaks:** Fixes various Memory Leak problems the original one has.
-- **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected (v1.0.1)
-- **Improved Performance:** Improved overall performance of the Dynamic Island (v1.0.1, check Release Tab for details)
+- **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island ([v1.0.0](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.0))
+- **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section ([v1.0.0](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.0)) 
+- **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island. ([v1.0.0](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.0))
+- **Weather Dashboard:** Fixed a problem where the Weather Dashboard fails to update after waking up the computer from Sleep Mode. ([v1.0.0](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.0))
+- **Memory Leaks:** Fixes various Memory Leak problems the original one has. ([v1.0.0](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.0))
+- **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected ([v1.0.1](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.1))
+- **Improved Performance:** Improved overall performance of the Dynamic Island ([v1.0.1](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.1), check Release Tab for details)
 ---
 
 ## 💬 Let's Chat!
