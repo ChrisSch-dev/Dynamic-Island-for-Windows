@@ -65,7 +65,7 @@ Tweak the mod easily from the **Windhawk settings panel**:
 
 ## 💬 Let's Chat!
 
-Found a bug? Have a cool feature idea? We want to hear from you! Please drop an issue on our [GitHub Repository](https://github.com/devcode90/Dynamic-Island-for-Windows/issues). Your feedback keeps this mod alive.
+Found a bug? Have a cool feature idea? We want to hear from you! Please drop an issue on our [GitHub Repository](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/issues). Your feedback keeps this mod alive.
 
 ---
 
