@@ -3598,7 +3598,7 @@ class Renderer {
 
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
-        std::wstring wText = L"Loading...";
+        std::wstring wText = L"🔄️ Loading...";
         if (hasWeather) {
             wText = state.weather.weatherDesc;
             GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText);
