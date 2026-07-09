@@ -62,7 +62,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Memory Leaks:** Fixed various possible memory leaks.
 - **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected (v1.0.1)
 - **Improved Performance:** Improved overall performance of the Dynamic Island (v1.0.1, check Release Tab for details)
-
+- **Unintended Movements:** fixed all unintended movements (nudging) across all Notifications-related activity (v1.0.2)
 ---
 
 ## 📝 Feedback & Credits
