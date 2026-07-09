@@ -1671,7 +1671,6 @@ DWORD WINAPI NotificationThreadProc(void*) {
                         std::lock_guard lock(g_stateMutex);
                         g_state.notification = std::move(snapshot);
                     }
-                    TriggerNudge();
                     lastSeenId = id;
                 }
             } catch (const winrt::hresult_error& ex) {
@@ -2122,10 +2121,6 @@ void UpdateBatterySnapshot() {
             g_state.battery.expiresAt = NowSeconds() + 4.0;
         }
     }
-
-    if (triggerAlert) {
-        TriggerNudge();
-    }
 }
 
 ULONGLONG FileTimeToUInt64(FILETIME ft) {
@@ -2485,7 +2480,6 @@ void CaptureShellNotification(HWND hwnd) {
         std::lock_guard lock(g_stateMutex);
         g_state.notification = std::move(notification);
     }
-    TriggerNudge();
 
     // Spawn a background thread to extract the full rich text body of the toast using UI Automation.
     // Modern Windows Toasts often only provide the App Name via GetWindowTextW, leaving the body hidden in the XAML tree.
@@ -2623,7 +2617,6 @@ void CaptureClipboard(HWND hwnd) {
             std::lock_guard lock(g_stateMutex);
             g_state.clipboard = std::move(clip);
         }
-        TriggerNudge();
     }
 }
 
@@ -5316,7 +5309,6 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 g_state.capsLock.isNumEvent = isNum;
                 g_state.capsLock.expiresAt = NowSeconds() + 2.5;
             }
-            TriggerNudge();
             return 0;
         }
 
@@ -5349,7 +5341,6 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                     g_state.device.isBluetoothLike = isBt;
                     g_state.device.expiresAt = NowSeconds() + 3.0;
                 }
-                TriggerNudge();
             }
             return 0;
         }
