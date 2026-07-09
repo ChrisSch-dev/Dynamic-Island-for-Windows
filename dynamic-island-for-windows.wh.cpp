@@ -2,7 +2,7 @@
 // @id              dynamic-island-for-windows-fork
 // @name            Dynamic Island for Windows - Fork
 // @description     Fixes a few problems with the original Dynamic Island for Windows mod.
-// @version         1.0.2
+// @version         1.0.1
 // @author          Fork Dev: ChrisSch || Original Dev: Himanshu
 // @github          https://github.com/ChrisSch-dev
 // @include         windhawk.exe
@@ -62,7 +62,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Memory Leaks:** Fixed various possible memory leaks.
 - **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected (v1.0.1)
 - **Improved Performance:** Improved overall performance of the Dynamic Island (v1.0.1, check Release Tab for details)
-- **Notification Fail:** fixed a problem where CapsLock and NumLock Notification are unresponsive. (v1.0.2)
+
 ---
 
 ## 📝 Feedback & Credits
@@ -1671,6 +1671,7 @@ DWORD WINAPI NotificationThreadProc(void*) {
                         std::lock_guard lock(g_stateMutex);
                         g_state.notification = std::move(snapshot);
                     }
+                    TriggerNudge();
                     lastSeenId = id;
                 }
             } catch (const winrt::hresult_error& ex) {
@@ -2121,6 +2122,10 @@ void UpdateBatterySnapshot() {
             g_state.battery.expiresAt = NowSeconds() + 4.0;
         }
     }
+
+    if (triggerAlert) {
+        TriggerNudge();
+    }
 }
 
 ULONGLONG FileTimeToUInt64(FILETIME ft) {
@@ -2480,6 +2485,7 @@ void CaptureShellNotification(HWND hwnd) {
         std::lock_guard lock(g_stateMutex);
         g_state.notification = std::move(notification);
     }
+    TriggerNudge();
 
     // Spawn a background thread to extract the full rich text body of the toast using UI Automation.
     // Modern Windows Toasts often only provide the App Name via GetWindowTextW, leaving the body hidden in the XAML tree.
@@ -2617,6 +2623,7 @@ void CaptureClipboard(HWND hwnd) {
             std::lock_guard lock(g_stateMutex);
             g_state.clipboard = std::move(clip);
         }
+        TriggerNudge();
     }
 }
 
@@ -3552,9 +3559,9 @@ class Renderer {
                                            rect.left + 191.5f * scale, rect.bottom - 34.0f * scale),
                               0.5f * scale, 0.5f * scale), divider.Get());
 
-        std::wstring line3 = hasWeather ? L"🍃 Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"Updated recently";
-        std::wstring line4 = hasWeather ? L"🌡️ Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"";
-        std::wstring line5 = hasWeather ? L"💧 Humidity: " + state.weather.humidity + L"%" : L"";
+        std::wstring line3 = hasWeather ? L"Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"Updated recently";
+        std::wstring line4 = hasWeather ? L"Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"";
+        std::wstring line5 = hasWeather ? L"Humidity: " + state.weather.humidity + L"%" : L"";
 
         mutedBrush_->SetOpacity(0.70f);
 
@@ -3591,7 +3598,7 @@ class Renderer {
 
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
-        std::wstring wText = L"🔄️ Loading...";
+        std::wstring wText = L"Loading...";
         if (hasWeather) {
             wText = state.weather.weatherDesc;
             GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText);
@@ -5264,10 +5271,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
             auto* kbd = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
             if (kbd->vkCode == VK_CAPITAL || kbd->vkCode == VK_NUMLOCK) {
-                bool capsOn = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
-                bool numOn = (GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
-                LPARAM state = (capsOn ? 1 : 0) | (numOn ? 2 : 0);
-                PostMessageW(g_hwnd, WM_APP_CAPSLOCK, kbd->vkCode, state);
+                PostMessageW(g_hwnd, WM_APP_CAPSLOCK, kbd->vkCode, 0);
             }
         }
     }
@@ -5275,11 +5279,6 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 DWORD WINAPI KeyboardThreadProc(void*) {
-    // Wait for the overlay window to exist before installing the hook,
-    // otherwise PostMessageW(g_hwnd, ...) will fail silently.
-    while (!g_hwnd) {
-        Sleep(10);
-    }
     g_keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, nullptr, 0);
     MSG msg;
     while (GetMessageW(&msg, nullptr, 0, 0)) {
@@ -5307,8 +5306,8 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case WM_APP_CAPSLOCK: {
             bool isNum = (wParam == VK_NUMLOCK);
-            bool capsOn = (lParam & 1) != 0;
-            bool numOn = (lParam & 2) != 0;
+            bool capsOn = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+            bool numOn = (GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
             {
                 std::lock_guard lock(g_stateMutex);
                 g_state.capsLock.active = true;
