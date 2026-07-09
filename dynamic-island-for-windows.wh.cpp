@@ -3545,7 +3545,7 @@ class Renderer {
         }
         if (weatherDescFormat) {
             weatherDescFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
-            weatherDescFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+            weatherDescFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
             weatherDescFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
         }
 
