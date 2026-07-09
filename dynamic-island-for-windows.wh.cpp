@@ -62,7 +62,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Memory Leaks:** Fixed various possible memory leaks.
 - **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected (v1.0.1)
 - **Improved Performance:** Improved overall performance of the Dynamic Island (v1.0.1, check Release Tab for details)
-- **Unintended Movements:** fixed all unintended movements (nudging) across all Notifications-related activity (v1.0.2)
+- **Notification Fail:** fixed a problem where CapsLock and NumLock Notification are unresponsive. (v1.0.2)
 ---
 
 ## 📝 Feedback & Credits
@@ -5264,7 +5264,10 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
             auto* kbd = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
             if (kbd->vkCode == VK_CAPITAL || kbd->vkCode == VK_NUMLOCK) {
-                PostMessageW(g_hwnd, WM_APP_CAPSLOCK, kbd->vkCode, 0);
+                bool capsOn = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+                bool numOn = (GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
+                LPARAM state = (capsOn ? 1 : 0) | (numOn ? 2 : 0);
+                PostMessageW(g_hwnd, WM_APP_CAPSLOCK, kbd->vkCode, state);
             }
         }
     }
@@ -5272,6 +5275,11 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 DWORD WINAPI KeyboardThreadProc(void*) {
+    // Wait for the overlay window to exist before installing the hook,
+    // otherwise PostMessageW(g_hwnd, ...) will fail silently.
+    while (!g_hwnd) {
+        Sleep(10);
+    }
     g_keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, nullptr, 0);
     MSG msg;
     while (GetMessageW(&msg, nullptr, 0, 0)) {
@@ -5299,8 +5307,8 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case WM_APP_CAPSLOCK: {
             bool isNum = (wParam == VK_NUMLOCK);
-            bool capsOn = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
-            bool numOn = (GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
+            bool capsOn = (lParam & 1) != 0;
+            bool numOn = (lParam & 2) != 0;
             {
                 std::lock_guard lock(g_stateMutex);
                 g_state.capsLock.active = true;
@@ -5309,6 +5317,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 g_state.capsLock.isNumEvent = isNum;
                 g_state.capsLock.expiresAt = NowSeconds() + 2.5;
             }
+            TriggerNudge();
             return 0;
         }
 
@@ -5341,6 +5350,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                     g_state.device.isBluetoothLike = isBt;
                     g_state.device.expiresAt = NowSeconds() + 3.0;
                 }
+                TriggerNudge();
             }
             return 0;
         }
