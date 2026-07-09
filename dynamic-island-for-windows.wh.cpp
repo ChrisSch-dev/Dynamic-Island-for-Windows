@@ -2,7 +2,7 @@
 // @id              dynamic-island-for-windows-fork
 // @name            Dynamic Island for Windows - Fork
 // @description     Fixes a few problems with the original Dynamic Island for Windows mod.
-// @version         1.0.1
+// @version         1.0.2
 // @author          Fork Dev: ChrisSch || Original Dev: Himanshu
 // @github          https://github.com/ChrisSch-dev
 // @include         windhawk.exe
@@ -62,7 +62,9 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Memory Leaks:** Fixed various possible memory leaks.
 - **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected (v1.0.1)
 - **Improved Performance:** Improved overall performance of the Dynamic Island (v1.0.1, check Release Tab for details)
-
+- **Unintended Movement 2:** Fixed unintended movement of the Dynamic Island when CapsLock, NumLock and Clipboard Notifications are detected (v1.0.2)
+- **Notification Failure:** Fixed a problem where the NumLock and CapsLock Notification fail to show up upon the first few times of the Dynamic Island being loaded (v1.0.2)
+- **Album Art Update Failure:** Fixed a problem where the Album Art fails to update when the song changes upon media completion (v1.0.2)
 ---
 
 ## 📝 Feedback & Credits
@@ -520,6 +522,7 @@ FILETIME g_prevUserTime = {};
 UINT g_shellHookMessage = 0;
 bool g_volumeInitialized = false;
 std::atomic<double> g_lastNudgeTime = 0.0;
+std::atomic<bool> g_needsRender = false;
 
 constexpr GUID kSubTypeIeeeFloat = {
     0x00000003,
@@ -1571,7 +1574,8 @@ DWORD WINAPI MediaThreadProc(void*) {
                 next.artist != g_state.media.artist;
 
             if (!g_state.media.art.bgra.empty() &&
-                next.title == g_state.media.title && next.artist == g_state.media.artist) {
+                next.title == g_state.media.title && next.artist == g_state.media.artist &&
+                next.positionTicks >= g_state.media.positionTicks) {
                 next.art = g_state.media.art;
                 next.artGeneration = g_state.media.artGeneration;
                 next.artChangedAt = g_state.media.artChangedAt;
@@ -2623,7 +2627,6 @@ void CaptureClipboard(HWND hwnd) {
             std::lock_guard lock(g_stateMutex);
             g_state.clipboard = std::move(clip);
         }
-        TriggerNudge();
     }
 }
 
@@ -5271,7 +5274,22 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
             auto* kbd = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
             if (kbd->vkCode == VK_CAPITAL || kbd->vkCode == VK_NUMLOCK) {
-                PostMessageW(g_hwnd, WM_APP_CAPSLOCK, kbd->vkCode, 0);
+                bool capsOn = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+                bool numOn = (GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
+                {
+                    std::lock_guard lock(g_stateMutex);
+                    g_state.capsLock.active = true;
+                    g_state.capsLock.capsOn = capsOn;
+                    g_state.capsLock.numOn = numOn;
+                    g_state.capsLock.isNumEvent = (kbd->vkCode == VK_NUMLOCK);
+                    g_state.capsLock.expiresAt = NowSeconds() + 2.5;
+                }
+                g_needsRender = true;
+                HWND hwnd = g_hwnd;
+                if (hwnd) {
+                    LPARAM state = (capsOn ? 1 : 0) | (numOn ? 2 : 0);
+                    PostMessageW(hwnd, WM_APP_CAPSLOCK, kbd->vkCode, state);
+                }
             }
         }
     }
@@ -5279,6 +5297,9 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 DWORD WINAPI KeyboardThreadProc(void*) {
+    while (!g_hwnd) {
+        Sleep(10);
+    }
     g_keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, nullptr, 0);
     MSG msg;
     while (GetMessageW(&msg, nullptr, 0, 0)) {
@@ -5306,8 +5327,8 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case WM_APP_CAPSLOCK: {
             bool isNum = (wParam == VK_NUMLOCK);
-            bool capsOn = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
-            bool numOn = (GetKeyState(VK_NUMLOCK) & 0x0001) != 0;
+            bool capsOn = (lParam & 1) != 0;
+            bool numOn = (lParam & 2) != 0;
             {
                 std::lock_guard lock(g_stateMutex);
                 g_state.capsLock.active = true;
@@ -5316,7 +5337,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 g_state.capsLock.isNumEvent = isNum;
                 g_state.capsLock.expiresAt = NowSeconds() + 2.5;
             }
-            TriggerNudge();
+            g_needsRender = true;
             return 0;
         }
 
@@ -5637,6 +5658,35 @@ DWORD WINAPI RenderThreadProc(void*) {
         }
 
         const double now = NowSeconds();
+
+        // Poll CapsLock/NumLock toggle state directly — no hook dependency
+        {
+            static bool prevCapsToggle = (GetKeyState(VK_CAPITAL) & 1) != 0;
+            static bool prevNumToggle = (GetKeyState(VK_NUMLOCK) & 1) != 0;
+            bool capsToggle = (GetKeyState(VK_CAPITAL) & 1) != 0;
+            bool numToggle = (GetKeyState(VK_NUMLOCK) & 1) != 0;
+            if (capsToggle != prevCapsToggle) {
+                prevCapsToggle = capsToggle;
+                std::lock_guard lock(g_stateMutex);
+                g_state.capsLock.active = true;
+                g_state.capsLock.capsOn = capsToggle;
+                g_state.capsLock.numOn = numToggle;
+                g_state.capsLock.isNumEvent = false;
+                g_state.capsLock.expiresAt = now + 2.5;
+                g_needsRender = true;
+            }
+            if (numToggle != prevNumToggle) {
+                prevNumToggle = numToggle;
+                std::lock_guard lock(g_stateMutex);
+                g_state.capsLock.active = true;
+                g_state.capsLock.capsOn = capsToggle;
+                g_state.capsLock.numOn = numToggle;
+                g_state.capsLock.isNumEvent = true;
+                g_state.capsLock.expiresAt = now + 2.5;
+                g_needsRender = true;
+            }
+        }
+
         if (now >= nextBatteryPoll) {
             UpdateBatterySnapshot();
             nextBatteryPoll = now + 15.0;
@@ -5708,6 +5758,9 @@ DWORD WINAPI RenderThreadProc(void*) {
         const bool hover = PtInRect(&windowRect, cursor) != FALSE;
 
         bool needsRender = false;
+        if (g_needsRender.exchange(false)) {
+            needsRender = true;
+        }
 
         if (!hover && g_clickExpanded.load()) {
             g_clickExpanded = false;

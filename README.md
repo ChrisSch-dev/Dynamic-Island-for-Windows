@@ -61,6 +61,9 @@ Tweak the mod easily from the **Windhawk settings panel**:
 - **Memory Leaks:** Fixes various Memory Leak problems the original one has. ([v1.0.0](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.0))
 - **Unintended Movement:** Fixed unintended movement of the Dynamic Island when Volume Changes are detected ([v1.0.1](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.1))
 - **Improved Performance:** Improved overall performance of the Dynamic Island ([v1.0.1](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.1), check Release Tab for details)
+- **Unintended Movement 2:** Fixed unintended movement of the Dynamic Island when CapsLock, NumLock and Clipboard Notifications are detected ([v1.0.2](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.2))
+- **Notification Failure:** Fixed a problem where the NumLock and CapsLock Notification fail to show up upon the first few times of the Dynamic Island being loaded ([v1.0.2](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.2))
+- **Album Art Update Failure:** Fixed a problem where the Album Art fails to update when the song changes upon media completion ([v1.0.2](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.2))
 ---
 
 ## 💬 Let's Chat!
