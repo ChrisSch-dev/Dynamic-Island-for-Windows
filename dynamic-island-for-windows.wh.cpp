@@ -2,7 +2,7 @@
 // @id              dynamic-island-for-windows-fork
 // @name            Dynamic Island for Windows - Fork
 // @description     Fixes a few problems with the original Dynamic Island for Windows mod.
-// @version         1.0.1
+// @version         1.0.2
 // @author          Fork Dev: ChrisSch || Original Dev: Himanshu
 // @github          https://github.com/ChrisSch-dev
 // @include         windhawk.exe
