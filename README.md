@@ -66,6 +66,12 @@ Tweak the mod easily from the **Windhawk settings panel**:
 - **Album Art Update Failure:** Fixed a problem where the Album Art fails to update when the song changes upon media completion ([v1.0.2](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.2))
 ---
 
+## Features by ChrisSch-dev
+- **120 FPS:** The Dynamic Island now runs at 120 FPS (more info in detailed changelog on github.) ([v1.0.3](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.3))
+- **Album Title:** Added Album Title info to the Media Island. Album Title field will be left empty. ([v1.0.3](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/releases/tag/v1.0.3))
+---
+
+
 ## 💬 Let's Chat!
 
 Found a bug? Have a cool feature idea? We want to hear from you! Please drop an issue on our [GitHub Repository](https://github.com/ChrisSch-dev/Dynamic-Island-for-Windows/issues). Your feedback keeps this mod alive.

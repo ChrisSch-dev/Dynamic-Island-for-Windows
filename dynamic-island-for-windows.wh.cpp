@@ -2,7 +2,7 @@
 // @id              dynamic-island-for-windows-fork
 // @name            Dynamic Island for Windows - Fork
 // @description     Fixes a few problems with the original Dynamic Island for Windows mod.
-// @version         1.0.2
+// @version         1.0.3
 // @author          Fork Dev: ChrisSch || Original Dev: Himanshu
 // @github          https://github.com/ChrisSch-dev
 // @include         windhawk.exe
@@ -54,7 +54,7 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 
 ---
 
-## Fixes by ChrisSch
+## Fixes by ChrisSch-dev
 - **Unintended Hover Expansion:** Fixed the unintended Hover Expansion for the GameMetrics Dynamic Island;
 - **Text Wrapping:** Implemented text wrapping for Weather Description on Weather Dynamic Island, the weather description will no longer warp into the Info Section;
 - **Maintain After Exit:** Fixed a problem where the page of the Dynamic Island wasn't reverted back to 0 after exitting the expanded Dynamic Island.
@@ -65,6 +65,11 @@ The Dynamic Island intelligently expands to display context-aware dashboards. Yo
 - **Unintended Movement 2:** Fixed unintended movement of the Dynamic Island when CapsLock, NumLock and Clipboard Notifications are detected (v1.0.2)
 - **Notification Failure:** Fixed a problem where the NumLock and CapsLock Notification fail to show up upon the first few times of the Dynamic Island being loaded (v1.0.2)
 - **Album Art Update Failure:** Fixed a problem where the Album Art fails to update when the song changes upon media completion (v1.0.2)
+---
+
+## Features by ChrisSch-dev
+- **120 FPS:** The Dynamic Island now runs at 120 FPS (more info in detailed changelog on github.) (v1.0.3)
+- **Album Title:** Added Album Title info to the Media Island. Album Title field will be left empty. (v1.0.3)
 ---
 
 ## 📝 Feedback & Credits
@@ -352,6 +357,7 @@ struct MediaSnapshot {
     bool playing = false;
     std::wstring title;
     std::wstring artist;
+    std::wstring albumTitle;
     std::wstring sourceAppUserModelId;
     std::wstring sourceName;
     std::wstring sourceBadge;
@@ -1491,6 +1497,8 @@ DWORD WINAPI MediaThreadProc(void*) {
                     next.playing = playback.PlaybackStatus() == PlaybackStatus::Playing;
                     next.title = properties.Title().c_str();
                     next.artist = properties.Artist().c_str();
+                    next.albumTitle = properties.AlbumTitle().c_str();
+
 
                     if (timeline) {
                         int64_t np = timeline.Position().count();
@@ -4213,6 +4221,14 @@ class Renderer {
                                 artistRect, smallTextFormat_.Get(), mutedBrush_.Get(), now, 30.0f);
                 mutedBrush_->SetOpacity(0.50f);
 
+                if (!state.media.albumTitle.empty()) {
+                    D2D1_RECT_F albumRect = D2D1::RectF(textLeft, rect.top + 68.0f, textRight, rect.top + 84.0f);
+                    mutedBrush_->SetOpacity(0.40f);
+                    DrawMarqueeText(state.media.albumTitle, albumRect, smallTextFormat_.Get(),
+                                    mutedBrush_.Get(), now, 28.0f);
+                    mutedBrush_->SetOpacity(0.50f);
+                }
+
                 if (state.media.playing) {
                     DrawWaveform(state, waveRect);
                 } else {
@@ -5984,7 +6000,16 @@ DWORD WINAPI RenderThreadProc(void*) {
                             hover, pinned, now);
         }
 
-        WaitForSingleObject(g_stopEvent, 16);
+        bool activelyAnimating = needsRender && (
+            primary.kind != IslandKind::Idle ||
+            std::abs(widthSpring.velocity) > 0.01f ||
+            std::abs(heightSpring.velocity) > 0.01f ||
+            std::abs(nudgeSpring.velocity) > 0.01f ||
+            std::abs(widthSpring.target - widthSpring.value) > 0.01f ||
+            std::abs(heightSpring.target - heightSpring.value) > 0.01f ||
+            std::abs(nudgeSpring.target - nudgeSpring.value) > 0.01f);
+        DWORD sleepMs = activelyAnimating ? 8 : 100;
+        WaitForSingleObject(g_stopEvent, sleepMs);
     }
 
     renderer.Shutdown();
