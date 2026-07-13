@@ -7,3 +7,5 @@ pr_validation.py
 cmake-build-debug
 
 .idea
+
+*.dll
